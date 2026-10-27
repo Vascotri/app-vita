@@ -9,7 +9,17 @@ import { test, expect } from "@playwright/test";
  * app to the state that shows them, then assert). This is the regression net for the whole class of
  * "cut off / not centered on mobile" bugs.
  */
-const ROUTES = ["/"];
+/**
+ * NOTE: every screen except /login now sits behind next-auth middleware, so an
+ * unauthenticated visit to "/" is a 307 to /login and testing it here would
+ * only ever re-test the login page.
+ *
+ * Covering the authenticated screens (the four-bar home, the sheets, setup)
+ * needs a signed-in browser context — a seeded next-auth session cookie via
+ * Playwright's storageState. That MUST land in this same slice: the four-bar
+ * home is the screen the mobile bar exists to protect.
+ */
+const ROUTES = ["/login"];
 
 for (const path of ROUTES) {
   test(`no horizontal overflow at phone width: ${path}`, async ({ page }) => {
